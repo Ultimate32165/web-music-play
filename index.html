@@ -261,10 +261,14 @@
             </div>
         </div>
         <h3 class="text-xl font-bold text-center">Your Local Playlist</h3>
-        <div class="flex justify-center">
+        <div class="flex justify-center space-x-4">
             <!-- Shuffle Button -->
             <button id="shuffle-btn" class="p-2 rounded-full bg-gray-700 hover:bg-gray-600 transition-colors duration-200 text-gray-400 hover:text-blue-500 transform transition-transform duration-200 hover:scale-110">
                 <i class="fas fa-shuffle"></i>
+            </button>
+            <!-- Clear Playlist Button -->
+            <button id="clear-playlist-btn" class="p-2 rounded-full bg-gray-700 hover:bg-gray-600 transition-colors duration-200 text-gray-400 hover:text-red-500 transform transition-transform duration-200 hover:scale-110">
+                 <i class="fas fa-trash-can"></i>
             </button>
         </div>
         <ul id="playlist" class="space-y-2 max-h-[300px] overflow-y-auto">
@@ -292,6 +296,7 @@
         const forwardBtn = document.getElementById('forward');
         const loopBtn = document.getElementById('loop-btn');
         const shuffleBtn = document.getElementById('shuffle-btn');
+        const clearPlaylistBtn = document.getElementById('clear-playlist-btn');
         const progressContainer = document.getElementById('progress-container');
         const progressBar = document.getElementById('progress-bar');
         const currentTimeEl = document.getElementById('current-time');
@@ -334,6 +339,28 @@
         let bassFilter;
         let midsFilter;
         let trebleFilter;
+        
+        // Define some pre-loaded songs
+        const preloadedSongs = [
+            {
+                title: 'Summer Nights',
+                artist: 'LiQWYD',
+                audioSrc: 'https://cdn.pixabay.com/audio/2023/02/10/summer-nights-132039.mp3',
+                imageSrc: 'https://placehold.co/500x500/000000/FFFFFF?text=Summer+Nights'
+            },
+            {
+                title: 'Inspiring Corporate',
+                artist: 'FASSounds',
+                audioSrc: 'https://cdn.pixabay.com/audio/2022/02/09/inspiring-corporate-14420.mp3',
+                imageSrc: 'https://placehold.co/500x500/000000/FFFFFF?text=Corporate'
+            },
+            {
+                title: 'Just Relax',
+                artist: 'Lesfm',
+                audioSrc: 'https://cdn.pixabay.com/audio/2023/07/04/just-relax-157989.mp3',
+                imageSrc: 'https://placehold.co/500x500/000000/FFFFFF?text=Relax'
+            }
+        ];
         
         // Function to show a custom message box
         const showMessageBox = (title, message) => {
@@ -729,6 +756,22 @@
              renderPlaylist();
         };
 
+        // Function to clear the entire playlist
+        const clearPlaylist = () => {
+            pauseSong();
+            songs = [];
+            originalSongs = [];
+            songIndex = 0;
+            audio.src = '';
+            songTitle.textContent = '';
+            songArtist.textContent = '';
+            albumArt.src = 'https://placehold.co/500x500/000000/FFFFFF?text=Album+Art';
+            progressBar.style.width = '0%';
+            currentTimeEl.textContent = '0:00';
+            totalTimeEl.textContent = '0:00';
+            renderPlaylist();
+        };
+
         // Function to render the playlist UI
         const renderPlaylist = () => {
             playlistEl.innerHTML = '';
@@ -828,6 +871,8 @@
             loopBtn.classList.toggle('text-blue-500', isLooping);
             loopBtn.classList.toggle('text-gray-400', !isLooping);
         });
+        
+        clearPlaylistBtn.addEventListener('click', clearPlaylist);
 
         shuffleBtn.addEventListener('click', () => {
             isShuffled = !isShuffled;
@@ -962,6 +1007,12 @@
         // Initial render
         window.onload = () => {
             initAudioApi();
+            // Load the preloaded songs when the page loads
+            songs = [...preloadedSongs];
+            originalSongs = [...preloadedSongs];
+            if (songs.length > 0) {
+                loadSong(songs[songIndex]);
+            }
             renderPlaylist();
         };
     </script>
